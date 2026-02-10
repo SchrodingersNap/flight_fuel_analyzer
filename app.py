@@ -203,7 +203,7 @@ with tab2:
     col_input, col_res = st.columns([1,1])
     
     with col_input:
-        bowser_cap = st.number_input("Bowser Capacity (KL)", 10.0, 40.0, 20.0, 0.5)
+        bowser_cap = st.number_input("Bowser Capacity (KL)", 0.0, 56.0, 15.0, 0.5)
         
         # Filter for valid carriers only
         flights = sorted(df_raw['flight_id'].unique())
