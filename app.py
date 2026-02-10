@@ -25,23 +25,27 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- 1. Load Data with Strict Filtering ---
+# --- 1. Load Data with Strict Filtering & Space Normalization ---
 @st.cache_data
 def load_data():
     try:
         df = pd.read_csv('flight_fuel.csv')
         df = df.dropna(subset=['qty'])
         
-        # Create Carrier Code column
-        df['Carrier'] = df['flight_id'].astype(str).str[:2]
+        # --- NEW: NORMALIZE FLIGHT IDs ---
+        # Convert to string, make uppercase, and remove ALL spaces
+        # This makes "6E 114", "6e 114", and "6E114" identical
+        df['flight_id'] = df['flight_id'].astype(str).str.upper().str.replace(" ", "", regex=False)
         
-        # --- NEW: STRICT CARRIER FILTER ---
+        # Create Carrier Code column
+        df['Carrier'] = df['flight_id'].str[:2]
+        
+        # --- STRICT CARRIER FILTER ---
         allowed_carriers = [
             '6E', 'AI', 'IX', '9I', 'MH', 'QP', 'SQ', 'AK', 'FD', 'TG', 
             'VZ', 'EK', 'BS', 'KB', 'B3', 'FZ', 'NS', 'U4', 'SL'
         ]
         
-        # Filter: Only keep rows where Carrier is in the allowed list
         original_count = len(df)
         df = df[df['Carrier'].isin(allowed_carriers)]
         filtered_count = len(df)
